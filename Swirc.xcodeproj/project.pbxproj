@@ -1,0 +1,586 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 48;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		0D20CF2F5BF9BE45477DBF5F /* Pods_SwircTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1A3138C381F62A05E9B47E22 /* Pods_SwircTests.framework */; };
+		1A76BD7320041D5D00A4FA44 /* IrcUser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A76BD7220041D5D00A4FA44 /* IrcUser.swift */; };
+		1A76BD7520041EA200A4FA44 /* IrcChannel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A76BD7420041EA200A4FA44 /* IrcChannel.swift */; };
+		1A76BD772004214300A4FA44 /* IrcError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A76BD762004214300A4FA44 /* IrcError.swift */; };
+		1AA649932004184500849D2F /* Swirc.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1AA649892004184500849D2F /* Swirc.framework */; };
+		1AA649982004184500849D2F /* SwircTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1AA649972004184500849D2F /* SwircTests.swift */; };
+		1AA649A420041A0F00849D2F /* IrcClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1AA649A320041A0F00849D2F /* IrcClient.swift */; };
+		1AE8789B200441C200B4F5BC /* IrcClientProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1AE8789A200441C200B4F5BC /* IrcClientProtocol.swift */; };
+		E6054A71F193F0CCCB87FE45 /* Pods_Swirc.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7AA163DB7AC01ACCBB949FD6 /* Pods_Swirc.framework */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		1AA649942004184500849D2F /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 1AA649802004184500849D2F /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 1AA649882004184500849D2F;
+			remoteInfo = Swirc;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		1A3138C381F62A05E9B47E22 /* Pods_SwircTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SwircTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		1A76BD7220041D5D00A4FA44 /* IrcUser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IrcUser.swift; sourceTree = "<group>"; };
+		1A76BD7420041EA200A4FA44 /* IrcChannel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IrcChannel.swift; sourceTree = "<group>"; };
+		1A76BD762004214300A4FA44 /* IrcError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IrcError.swift; sourceTree = "<group>"; };
+		1AA649892004184500849D2F /* Swirc.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Swirc.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		1AA6498D2004184500849D2F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		1AA649922004184500849D2F /* SwircTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SwircTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		1AA649972004184500849D2F /* SwircTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwircTests.swift; sourceTree = "<group>"; };
+		1AA649992004184500849D2F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		1AA649A320041A0F00849D2F /* IrcClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IrcClient.swift; sourceTree = "<group>"; };
+		1AE8789A200441C200B4F5BC /* IrcClientProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IrcClientProtocol.swift; sourceTree = "<group>"; };
+		24C5DCB3A6E5587514A08D72 /* Pods-SwircTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SwircTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-SwircTests/Pods-SwircTests.release.xcconfig"; sourceTree = "<group>"; };
+		7AA163DB7AC01ACCBB949FD6 /* Pods_Swirc.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Swirc.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		B56F58F7B092DB75CB5A330C /* Pods-SwircTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SwircTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-SwircTests/Pods-SwircTests.debug.xcconfig"; sourceTree = "<group>"; };
+		DA41973DB01139D4DBAB8E9B /* Pods-Swirc.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Swirc.release.xcconfig"; path = "Pods/Target Support Files/Pods-Swirc/Pods-Swirc.release.xcconfig"; sourceTree = "<group>"; };
+		E6D3BE023A9450968C483C31 /* Pods-Swirc.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Swirc.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Swirc/Pods-Swirc.debug.xcconfig"; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		1AA649852004184500849D2F /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				E6054A71F193F0CCCB87FE45 /* Pods_Swirc.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		1AA6498F2004184500849D2F /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				1AA649932004184500849D2F /* Swirc.framework in Frameworks */,
+				0D20CF2F5BF9BE45477DBF5F /* Pods_SwircTests.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		1814E6254123AB764534EBE7 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				7AA163DB7AC01ACCBB949FD6 /* Pods_Swirc.framework */,
+				1A3138C381F62A05E9B47E22 /* Pods_SwircTests.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		1AA6497F2004184500849D2F = {
+			isa = PBXGroup;
+			children = (
+				1AA6498B2004184500849D2F /* Swirc */,
+				1AA649962004184500849D2F /* SwircTests */,
+				1AA6498A2004184500849D2F /* Products */,
+				24FD950D14C6CB3CF7F5C179 /* Pods */,
+				1814E6254123AB764534EBE7 /* Frameworks */,
+			);
+			sourceTree = "<group>";
+		};
+		1AA6498A2004184500849D2F /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				1AA649892004184500849D2F /* Swirc.framework */,
+				1AA649922004184500849D2F /* SwircTests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		1AA6498B2004184500849D2F /* Swirc */ = {
+			isa = PBXGroup;
+			children = (
+				1AA6498D2004184500849D2F /* Info.plist */,
+				1AA649A320041A0F00849D2F /* IrcClient.swift */,
+				1AE8789A200441C200B4F5BC /* IrcClientProtocol.swift */,
+				1A76BD7220041D5D00A4FA44 /* IrcUser.swift */,
+				1A76BD7420041EA200A4FA44 /* IrcChannel.swift */,
+				1A76BD762004214300A4FA44 /* IrcError.swift */,
+			);
+			path = Swirc;
+			sourceTree = "<group>";
+		};
+		1AA649962004184500849D2F /* SwircTests */ = {
+			isa = PBXGroup;
+			children = (
+				1AA649972004184500849D2F /* SwircTests.swift */,
+				1AA649992004184500849D2F /* Info.plist */,
+			);
+			path = SwircTests;
+			sourceTree = "<group>";
+		};
+		24FD950D14C6CB3CF7F5C179 /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				E6D3BE023A9450968C483C31 /* Pods-Swirc.debug.xcconfig */,
+				DA41973DB01139D4DBAB8E9B /* Pods-Swirc.release.xcconfig */,
+				B56F58F7B092DB75CB5A330C /* Pods-SwircTests.debug.xcconfig */,
+				24C5DCB3A6E5587514A08D72 /* Pods-SwircTests.release.xcconfig */,
+			);
+			name = Pods;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXHeadersBuildPhase section */
+		1AA649862004184500849D2F /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXHeadersBuildPhase section */
+
+/* Begin PBXNativeTarget section */
+		1AA649882004184500849D2F /* Swirc */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 1AA6499D2004184500849D2F /* Build configuration list for PBXNativeTarget "Swirc" */;
+			buildPhases = (
+				60BD78F6212A3214DEE38D50 /* [CP] Check Pods Manifest.lock */,
+				1AA649842004184500849D2F /* Sources */,
+				1AA649852004184500849D2F /* Frameworks */,
+				1AA649862004184500849D2F /* Headers */,
+				1AA649872004184500849D2F /* Resources */,
+				BA3AAAFC06BF52E7E7D85C61 /* [CP] Copy Pods Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = Swirc;
+			productName = Swirc;
+			productReference = 1AA649892004184500849D2F /* Swirc.framework */;
+			productType = "com.apple.product-type.framework";
+		};
+		1AA649912004184500849D2F /* SwircTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 1AA649A02004184500849D2F /* Build configuration list for PBXNativeTarget "SwircTests" */;
+			buildPhases = (
+				CAC1BC482A6485D66F2698A6 /* [CP] Check Pods Manifest.lock */,
+				1AA6498E2004184500849D2F /* Sources */,
+				1AA6498F2004184500849D2F /* Frameworks */,
+				1AA649902004184500849D2F /* Resources */,
+				CB057D07A2AC3A8C1FFA2E37 /* [CP] Embed Pods Frameworks */,
+				A33A6EFADD88036B0CA1F04B /* [CP] Copy Pods Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				1AA649952004184500849D2F /* PBXTargetDependency */,
+			);
+			name = SwircTests;
+			productName = SwircTests;
+			productReference = 1AA649922004184500849D2F /* SwircTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		1AA649802004184500849D2F /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastSwiftUpdateCheck = 0920;
+				LastUpgradeCheck = 0920;
+				ORGANIZATIONNAME = "James Shephard";
+				TargetAttributes = {
+					1AA649882004184500849D2F = {
+						CreatedOnToolsVersion = 9.2;
+						LastSwiftMigration = 0920;
+						ProvisioningStyle = Automatic;
+					};
+					1AA649912004184500849D2F = {
+						CreatedOnToolsVersion = 9.2;
+						ProvisioningStyle = Automatic;
+					};
+				};
+			};
+			buildConfigurationList = 1AA649832004184500849D2F /* Build configuration list for PBXProject "Swirc" */;
+			compatibilityVersion = "Xcode 8.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = 1AA6497F2004184500849D2F;
+			productRefGroup = 1AA6498A2004184500849D2F /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				1AA649882004184500849D2F /* Swirc */,
+				1AA649912004184500849D2F /* SwircTests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		1AA649872004184500849D2F /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		1AA649902004184500849D2F /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		60BD78F6212A3214DEE38D50 /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-Swirc-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+		A33A6EFADD88036B0CA1F04B /* [CP] Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "[CP] Copy Pods Resources";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-SwircTests/Pods-SwircTests-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		BA3AAAFC06BF52E7E7D85C61 /* [CP] Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "[CP] Copy Pods Resources";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-Swirc/Pods-Swirc-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		CAC1BC482A6485D66F2698A6 /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-SwircTests-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+		CB057D07A2AC3A8C1FFA2E37 /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"${SRCROOT}/Pods/Target Support Files/Pods-SwircTests/Pods-SwircTests-frameworks.sh",
+				"${BUILT_PRODUCTS_DIR}/CocoaAsyncSocket/CocoaAsyncSocket.framework",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputPaths = (
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/CocoaAsyncSocket.framework",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-SwircTests/Pods-SwircTests-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+/* End PBXShellScriptBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		1AA649842004184500849D2F /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				1A76BD7520041EA200A4FA44 /* IrcChannel.swift in Sources */,
+				1AE8789B200441C200B4F5BC /* IrcClientProtocol.swift in Sources */,
+				1A76BD772004214300A4FA44 /* IrcError.swift in Sources */,
+				1AA649A420041A0F00849D2F /* IrcClient.swift in Sources */,
+				1A76BD7320041D5D00A4FA44 /* IrcUser.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		1AA6498E2004184500849D2F /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				1AA649982004184500849D2F /* SwircTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		1AA649952004184500849D2F /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 1AA649882004184500849D2F /* Swirc */;
+			targetProxy = 1AA649942004184500849D2F /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		1AA6499B2004184500849D2F /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "-";
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				MTL_ENABLE_DEBUG_INFO = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+			};
+			name = Debug;
+		};
+		1AA6499C2004184500849D2F /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "-";
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				SDKROOT = macosx;
+				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+			};
+			name = Release;
+		};
+		1AA6499E2004184500849D2F /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = E6D3BE023A9450968C483C31 /* Pods-Swirc.debug.xcconfig */;
+			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_IDENTITY = "";
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				DEFINES_MODULE = YES;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				FRAMEWORK_VERSION = A;
+				INFOPLIST_FILE = Swirc/Info.plist;
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/Frameworks";
+				MACOSX_DEPLOYMENT_TARGET = 10.11;
+				PRODUCT_BUNDLE_IDENTIFIER = net.jshephard.Swirc;
+				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
+				SKIP_INSTALL = YES;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 4.0;
+			};
+			name = Debug;
+		};
+		1AA6499F2004184500849D2F /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = DA41973DB01139D4DBAB8E9B /* Pods-Swirc.release.xcconfig */;
+			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_IDENTITY = "";
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				DEFINES_MODULE = YES;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				FRAMEWORK_VERSION = A;
+				INFOPLIST_FILE = Swirc/Info.plist;
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/Frameworks";
+				MACOSX_DEPLOYMENT_TARGET = 10.11;
+				PRODUCT_BUNDLE_IDENTIFIER = net.jshephard.Swirc;
+				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
+				SKIP_INSTALL = YES;
+				SWIFT_VERSION = 4.0;
+			};
+			name = Release;
+		};
+		1AA649A12004184500849D2F /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = B56F58F7B092DB75CB5A330C /* Pods-SwircTests.debug.xcconfig */;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				INFOPLIST_FILE = SwircTests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = net.jshephard.SwircTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 4.0;
+			};
+			name = Debug;
+		};
+		1AA649A22004184500849D2F /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 24C5DCB3A6E5587514A08D72 /* Pods-SwircTests.release.xcconfig */;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				INFOPLIST_FILE = SwircTests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = net.jshephard.SwircTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 4.0;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		1AA649832004184500849D2F /* Build configuration list for PBXProject "Swirc" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				1AA6499B2004184500849D2F /* Debug */,
+				1AA6499C2004184500849D2F /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		1AA6499D2004184500849D2F /* Build configuration list for PBXNativeTarget "Swirc" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				1AA6499E2004184500849D2F /* Debug */,
+				1AA6499F2004184500849D2F /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		1AA649A02004184500849D2F /* Build configuration list for PBXNativeTarget "SwircTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				1AA649A12004184500849D2F /* Debug */,
+				1AA649A22004184500849D2F /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 1AA649802004184500849D2F /* Project object */;
+}
