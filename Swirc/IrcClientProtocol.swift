@@ -27,11 +27,11 @@ import Foundation
 
 /// All relevant delegate functions for IRC are specified here, i.e. for events like
 /// message received, kicked from a channel, etc.
-protocol IrcClientProtocol: class {
-    func nickInUse()
+public protocol IrcClientProtocol: class {
+    func privateMessage(user: IrcUser, channel: String, message: String)
 }
 
 // MARK: - Base implementation of optional IrcClientProtocol methods
-extension IrcClientProtocol {
+public extension IrcClientProtocol {
 
 }

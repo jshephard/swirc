@@ -28,8 +28,9 @@ import Foundation
 /// Structure for encapsulating user details, like nickname, username or password
 public struct IrcUser {
 
-    var username, password: String?
-    var nick: String
+    var password: String?
+    public private(set) var username: String?
+    public private(set) var nick: String
     
     /// Initialize the IrcUser with nick alone
     ///

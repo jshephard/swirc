@@ -26,8 +26,8 @@
 import Foundation
 
 /// This is a non-complete list of response codes found in responses from the server
-enum IrcResponseCode: String {
-    // Non-numeric respones codes
+public enum IrcResponseCode: String {
+    // Non-numeric response codes
     case Notice = "NOTICE"
     case Mode = "MODE"
     case Join = "JOIN"

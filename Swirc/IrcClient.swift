@@ -40,16 +40,32 @@ public class IrcClient: NSObject, GCDAsyncSocketDelegate {
     var authenticated: Bool = false
     
     var socket: GCDAsyncSocket
-
     var interimSocketData: String?
-    
+
+    // Generic command handler, accepting the IrcUser (which may just be the host),
+    // as well as a list of parameters
+    typealias CommandHandler = (IrcUser, [String]) -> Void
+    var handlers = [IrcResponseCode: CommandHandler]()
+    weak var delegate: IrcClientProtocol?
+
     /// Initialize IrcClient
     ///
     /// - Parameters:
     ///   - hostname: Hostname of the IRC server. This may include the port number.
     ///   - user: An IrcUser, which contains relevant information for authentication.
     /// - Throws: ConnectionError.invalidHostname
-    public init(hostname: String, user: IrcUser) throws {
+    public convenience init(hostname: String, user: IrcUser) throws {
+        try self.init(hostname: hostname, user: user, delegate: nil)
+    }
+    
+    /// Initialize IrcClient
+    ///
+    /// - Parameters:
+    ///   - hostname: Hostname of the IRC server. This may include the port number.
+    ///   - user: An IrcUser, which contains relevant information for authentication.
+    ///   - delegate: Delegate that will handle IRC events (i.e. messages received)
+    /// - Throws: ConnectionError.invalidHostname
+    public init(hostname: String, user: IrcUser, delegate: IrcClientProtocol?) throws {
         // Check hostname to see if it contains a port (defaults to 6667)
         if hostname.range(of: ":") != nil {
             let host = hostname.split(separator: ":")
@@ -65,11 +81,17 @@ public class IrcClient: NSObject, GCDAsyncSocketDelegate {
 
         self.user = user
         self.socket = GCDAsyncSocket.init()
+        self.delegate = delegate
 
         super.init()
         
         // Set the delegate and delegate queue after super.init
         self.socket.setDelegate(self, delegateQueue: DispatchQueue.main)
+        self.initializeHandlers()
+    }
+
+    public func setDelegate(delegate: IrcClientProtocol) {
+        self.delegate = delegate
     }
 
     /// Connect to the IRC server
@@ -130,6 +152,7 @@ public class IrcClient: NSObject, GCDAsyncSocketDelegate {
 
     /// Send the authentication handshake
     func sendAuthentication() {
+        // TODO: can this be called when we're already connected?
         let username = user.username ?? "guest"
         if let password = user.password {
             writeString("PASS \(password)")
@@ -137,6 +160,28 @@ public class IrcClient: NSObject, GCDAsyncSocketDelegate {
         // TODO: customizing the other attributes, i.e. invisibility, real name
         writeString("USER \(username) 8 * :guest")
         writeString("NICK \(user.nick)")
+    }
+
+    /* *** COMMAND HANDLERS *** */
+
+    /// Initialize the handlers dictionary with all implemented command handlers
+    func initializeHandlers() {
+        handlers[IrcResponseCode.PrivateMessage] = privMsg
+    }
+
+    /// Handle private message commands
+    ///
+    /// - Parameters:
+    ///   - user: The user details of who sent this message
+    ///   - params: Private message parameters
+    func privMsg(user: IrcUser, params: [String]) {
+        if params.count != 2 {
+            // TODO: handle?
+            return
+        }
+
+        let channel = params[0], message = params[1]
+        self.delegate?.privateMessage(user: user, channel: channel, message: message)
     }
     
     /* *** SOCKET PROTOCOL **** */
@@ -253,6 +298,12 @@ public class IrcClient: NSObject, GCDAsyncSocketDelegate {
 \(nick ?? "") \(user ?? "") \(host ?? "") \(responseCode == nil ? responseCodeRaw : responseCode.debugDescription) \(params)
 """)
                 #endif
+                if let code = responseCode, let handler = handlers[code] {
+                    // TODO: flesh out the IrcUser a bit more (i.e. host, user, etc.)
+                    handler(IrcUser.init(nick: nick ?? "UNKNOWN"), params)
+                } else {
+                    // TODO: unknown command
+                }
             }
         }
     }
