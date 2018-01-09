@@ -27,15 +27,23 @@ import Foundation
 
 import CocoaAsyncSocket
 
+/// Manages the connection to the IRC server
 public class IrcClient: NSObject, GCDAsyncSocketDelegate {
     
     var hostname: String
-    var port:UInt16 = 6667
+    var port: UInt16 = 6667
     var user: IrcUser
     var connectedChannels = [IrcChannel]()
+    var connected: Bool = false
     
     var socket: GCDAsyncSocket
     
+    /// Initialize IrcClient
+    ///
+    /// - Parameters:
+    ///   - hostname: Hostname of the IRC server. This may include the port number.
+    ///   - user: An IrcUser, which contains relevant information for authentication.
+    /// - Throws: ConnectionError.invalidHostname
     public init(hostname: String, user: IrcUser) throws {
         // Check hostname to see if it contains a port (defaults to 6667)
         if hostname.range(of: ":") != nil {
@@ -49,15 +57,25 @@ public class IrcClient: NSObject, GCDAsyncSocketDelegate {
         } else {
             self.hostname = hostname
         }
+
         self.user = user
-        socket = GCDAsyncSocket.init()
+        self.socket = GCDAsyncSocket.init()
+
         super.init()
         
         // Set the delegate and delegate queue after super.init
-        socket.setDelegate(self, delegateQueue: DispatchQueue.main)
+        self.socket.setDelegate(self, delegateQueue: DispatchQueue.main)
     }
-    
+
+    /// Connect to the IRC server
+    ///
+    /// - Throws: ConnectionError.alreadyConnected, ConnectionError.invalidHostname
     public func connect() throws {
+        // Don't reconnect if we are already connected
+        if connected {
+            throw ConnectionError.alreadyConnected
+        }
+        
         do {
             try socket.connect(toHost: hostname, onPort: port)
         } catch let error {
@@ -66,14 +84,20 @@ public class IrcClient: NSObject, GCDAsyncSocketDelegate {
             throw ConnectionError.invalidHostname
         }
     }
-    
-    func writeString(_ string: String) {
-        print("Sending: \(string)")
-        if let data = string.data(using: .ascii) {
-            socket.write(data, withTimeout: -1.0, tag:0)
+
+    /// Update the current user (i.e. the nickname)
+    ///
+    /// - Parameter user: New or updated IrcUser
+    public func setUser(user: IrcUser) {
+        self.user = user
+
+        if connected {
+            // TODO: update user details on server. is the following sufficient?
+            sendAuthentication()
         }
     }
-    
+
+    /// Send the authentication handshake
     func sendAuthentication() {
         if let username = user.username,
            let password = user.password {
@@ -88,24 +112,40 @@ public class IrcClient: NSObject, GCDAsyncSocketDelegate {
     }
     
     /* *** SOCKET PROTOCOL **** */
-    
-    // Socket connected
+
+    /// Called when the socket first connects successfully to the IRC server
     @objc public func socket(_ sock: GCDAsyncSocket, didConnectToHost host: String, port: UInt16) {
+        self.connected = true
+
         // Begin the handshake sequence
         sendAuthentication()
         
         // Begin receiving data
         socket.readData(withTimeout: -1.0, tag: 0)
     }
-    
-    // Socket received data
+
+    /// Called when the socket receives data from the IRC server
     @objc public func socket(_ sock: GCDAsyncSocket, didRead data: Data, withTag tag: Int) {
         if let str = String.init(data: data, encoding: String.Encoding.ascii) {
             //Received: :kornbluth.freenode.net 433 * testusername :Nickname is already in use.
+            #if DEBUG
             print("Received: \(str)")
+            #endif
         }
         
         socket.readData(withTimeout: -1.0, tag: 0)
+    }
+
+    /// Helper for writing strings to the socket
+    ///
+    /// - Parameter string: content to send to the server
+    func writeString(_ string: String) {
+        #if DEBUG
+        print("Sending: \(string)")
+        #endif
+        if let data = string.data(using: .ascii) {
+            socket.write(data, withTimeout: -1.0, tag:0)
+        }
     }
     
 }

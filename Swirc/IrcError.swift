@@ -25,6 +25,11 @@
 
 import Foundation
 
+/// A set of errors regarding connection to the server
+///
+/// - invalidHostname: Thrown when an invalid hostname has been specified
+/// - alreadyConnected: Thrown when attempting to connect while already connected
 public enum ConnectionError: Error {
     case invalidHostname
+    case alreadyConnected
 }

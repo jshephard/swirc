@@ -25,17 +25,29 @@
 
 import Foundation
 
+/// Structure for encapsulating user details, like nickname, username or password
 public struct IrcUser {
+
     var username, password: String?
     var nick: String
     
+    /// Initialize the IrcUser with nick alone
+    ///
+    /// - Parameter nick: Nickname to use on the IRC server
     public init(nick: String) {
         self.nick = nick
     }
     
+    /// Initialize the IrcUser with a nickname, username and password
+    ///
+    /// - Parameters:
+    ///   - nick: Nickname to use on the IRC server
+    ///   - username: Username for the IRC server
+    ///   - password: Password for the IRC server
     public init(nick: String, username: String, password: String) {
         self.nick = nick
         self.username = username
         self.password = password
     }
+
 }
