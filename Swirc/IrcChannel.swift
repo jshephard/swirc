@@ -26,5 +26,13 @@
 import Foundation
 
 public class IrcChannel {
-    
+
+    var ircClient: IrcClient
+    var channelName: String
+
+    init(ircClient: IrcClient, channelName: String) {
+        self.ircClient = ircClient
+        self.channelName = channelName
+    }
+
 }

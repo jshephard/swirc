@@ -33,10 +33,15 @@ public class IrcClient: NSObject, GCDAsyncSocketDelegate {
     var hostname: String
     var port: UInt16 = 6667
     var user: IrcUser
-    var connectedChannels = [IrcChannel]()
+    var connectedChannels = [String: IrcChannel]()
     var connected: Bool = false
+
+    // Authenticated here means a valid nickname and password
+    var authenticated: Bool = false
     
     var socket: GCDAsyncSocket
+
+    var interimSocketData: String?
     
     /// Initialize IrcClient
     ///
@@ -47,8 +52,8 @@ public class IrcClient: NSObject, GCDAsyncSocketDelegate {
     public init(hostname: String, user: IrcUser) throws {
         // Check hostname to see if it contains a port (defaults to 6667)
         if hostname.range(of: ":") != nil {
-            let host = hostname.components(separatedBy: ":")
-            self.hostname = host[0]
+            let host = hostname.split(separator: ":")
+            self.hostname = String(host[0])
             if let port = UInt16(host[1]) {
                 self.port = port
             } else {
@@ -97,18 +102,41 @@ public class IrcClient: NSObject, GCDAsyncSocketDelegate {
         }
     }
 
+    /// Joins the specified channel
+    ///
+    /// - Parameter channelString: The channel
+    public func joinChannel(_ channelString: String) {
+        // TODO: check connection and authentication status
+        // TODO: validation of string
+        if connectedChannels[channelString] != nil {
+            // Already connected
+            return
+        }
+
+        writeString("JOIN \(channelString)")
+    }
+
+    /// Parts the specified channel
+    ///
+    /// - Parameter channelString: The channel
+    public func partChannel(_ channelString: String) {
+        // TODO: check connection and authentication status
+        // TODO: validation of string
+
+        writeString("PART \(channelString)")
+    }
+
+    /* *** PRIVATE HELPERS *** */
+
     /// Send the authentication handshake
     func sendAuthentication() {
-        if let username = user.username,
-           let password = user.password {
-            writeString("PASS \(password)\n")
-            // TODO: customizing the real name?
-            writeString("USER \(username) 8 * :guest\n")
-        } else {
-            // TODO: customizing username and real name?
-            writeString("USER guest 8 * :guest\n")
+        let username = user.username ?? "guest"
+        if let password = user.password {
+            writeString("PASS \(password)")
         }
-        writeString("NICK \(user.nick)\n")
+        // TODO: customizing the other attributes, i.e. invisibility, real name
+        writeString("USER \(username) 8 * :guest")
+        writeString("NICK \(user.nick)")
     }
     
     /* *** SOCKET PROTOCOL **** */
@@ -126,14 +154,107 @@ public class IrcClient: NSObject, GCDAsyncSocketDelegate {
 
     /// Called when the socket receives data from the IRC server
     @objc public func socket(_ sock: GCDAsyncSocket, didRead data: Data, withTag tag: Int) {
-        if let str = String.init(data: data, encoding: String.Encoding.ascii) {
-            //Received: :kornbluth.freenode.net 433 * testusername :Nickname is already in use.
-            #if DEBUG
-            print("Received: \(str)")
-            #endif
-        }
-        
         socket.readData(withTimeout: -1.0, tag: 0)
+
+        if let str = String.init(data: data, encoding: String.Encoding.ascii) {
+            // Reassemble string from previous fragmented data
+            let assembledString = (interimSocketData ?? "") + str
+            let fragmented: Bool = !assembledString.hasSuffix("\r\n")
+            if assembledString.range(of: "\r\n") != nil {
+                // We have received a full, complete command and thus can toss the
+                // interim data.
+                interimSocketData = nil
+            }
+
+            let commands = assembledString.components(separatedBy: "\r\n")
+
+            for (index, command) in commands.enumerated() {
+                if index == (commands.count - 1) && fragmented {
+                    // Data has been fragmented, wait for next packet
+                    interimSocketData = command
+                    return
+                }
+                if !command.hasPrefix(":") {
+                    return // TODO: do clients ever _not_ receive :?
+                }
+
+                // TODO: strip out the following into a separate parser function
+                let arguments = command.split(separator: " ")
+
+                // Remove the ':' prefix
+                let prefix = String(String(arguments[0]).dropFirst(1))
+
+                // Extract out this information with a regex
+                var nick: String? = prefix
+                var user: String?
+                var host: String?
+                do {
+                    // TODO: separate function?
+                    let regex = try NSRegularExpression(pattern: "^([^@!]+)(?:!([^@!]+))?(?:@([^@!]+))?$", options: [])
+                    let matches = regex.matches(in: prefix, options: [], range: NSRange(location: 0, length: prefix.count))
+                    if let match = matches.first {
+                        var results = [String?]()
+                        for index in 1..<match.numberOfRanges {
+                            let range = match.range(at: index)
+                            if !NSEqualRanges(range, NSMakeRange(NSNotFound, 0)) {
+                                results.append((prefix as NSString).substring(with: range))
+                            } else {
+                                results.append(nil)
+                            }
+                        }
+                        nick = results[0]
+                        user = results[1]
+                        host = results[2]
+                    }
+                } catch let error {
+                    // TODO: handle error better
+                    print(error)
+                }
+
+                let responseCodeRaw = String(arguments[1])
+                let rawParams = arguments[2...].map { String($0) }
+
+                // Parse params. Initial params are delineated by spaces, latter ones
+                // can have spaces in them but begin with a colon
+                var params = [String]()
+                var trailingParams = false
+                var currentParam = ""
+
+                // TODO: Make this a cleaner solution, regex perhaps?
+                for rawParam in rawParams {
+                    if trailingParams {
+                        // We're now in the realm of the trailing params
+                        if rawParam.starts(with: ":") {
+                            // New trailing param started
+                            params.append(String(currentParam.dropFirst(1)))
+                            currentParam = rawParam
+                        } else {
+                            // Continue adding to our current trailing param
+                            currentParam += " " + rawParam
+                        }
+                    } else {
+                        if rawParam.starts(with: ":") {
+                            // This is our first trailing param
+                            trailingParams = true
+                            currentParam = rawParam
+                        } else {
+                            params.append(rawParam)
+                        }
+                    }
+                }
+                if trailingParams {
+                    params.append(String(currentParam.dropFirst(1)))
+                }
+
+                let responseCode = IrcResponseCode(rawValue: responseCodeRaw)
+
+                #if DEBUG
+                    print("""
+\(nick ?? "") \(user ?? "") \(host ?? "") \(responseCode == nil ? responseCodeRaw : responseCode.debugDescription) \(params)
+""")
+                #endif
+            }
+        }
     }
 
     /// Helper for writing strings to the socket
@@ -141,9 +262,15 @@ public class IrcClient: NSObject, GCDAsyncSocketDelegate {
     /// - Parameter string: content to send to the server
     func writeString(_ string: String) {
         #if DEBUG
-        print("Sending: \(string)")
+            print("Sending: \(string)")
         #endif
-        if let data = string.data(using: .ascii) {
+        // Commands must end with new lines
+        var command = string
+        if !command.hasSuffix("\r\n") {
+            command += "\r\n"
+        }
+
+        if let data = command.data(using: .ascii) {
             socket.write(data, withTimeout: -1.0, tag:0)
         }
     }

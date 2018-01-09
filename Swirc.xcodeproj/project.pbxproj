@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		0D20CF2F5BF9BE45477DBF5F /* Pods_SwircTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1A3138C381F62A05E9B47E22 /* Pods_SwircTests.framework */; };
+		1A0533F820046E8600E2B271 /* IrcResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A0533F720046E8600E2B271 /* IrcResponse.swift */; };
 		1A76BD7320041D5D00A4FA44 /* IrcUser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A76BD7220041D5D00A4FA44 /* IrcUser.swift */; };
 		1A76BD7520041EA200A4FA44 /* IrcChannel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A76BD7420041EA200A4FA44 /* IrcChannel.swift */; };
 		1A76BD772004214300A4FA44 /* IrcError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A76BD762004214300A4FA44 /* IrcError.swift */; };
@@ -29,6 +30,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		1A0533F720046E8600E2B271 /* IrcResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IrcResponse.swift; sourceTree = "<group>"; };
 		1A3138C381F62A05E9B47E22 /* Pods_SwircTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SwircTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		1A76BD7220041D5D00A4FA44 /* IrcUser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IrcUser.swift; sourceTree = "<group>"; };
 		1A76BD7420041EA200A4FA44 /* IrcChannel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IrcChannel.swift; sourceTree = "<group>"; };
@@ -106,6 +108,7 @@
 				1A76BD7220041D5D00A4FA44 /* IrcUser.swift */,
 				1A76BD7420041EA200A4FA44 /* IrcChannel.swift */,
 				1A76BD762004214300A4FA44 /* IrcError.swift */,
+				1A0533F720046E8600E2B271 /* IrcResponse.swift */,
 			);
 			path = Swirc;
 			sourceTree = "<group>";
@@ -337,6 +340,7 @@
 				1A76BD772004214300A4FA44 /* IrcError.swift in Sources */,
 				1AA649A420041A0F00849D2F /* IrcClient.swift in Sources */,
 				1A76BD7320041D5D00A4FA44 /* IrcUser.swift in Sources */,
+				1A0533F820046E8600E2B271 /* IrcResponse.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
