@@ -28,6 +28,8 @@ import Foundation
 /// This is a non-complete list of response codes found in responses from the server
 public enum IrcResponseCode: String {
     // Non-numeric response codes
+    case Ping = "PING"
+    case Pong = "PONG"
     case Notice = "NOTICE"
     case Mode = "MODE"
     case Join = "JOIN"

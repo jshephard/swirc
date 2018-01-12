@@ -29,10 +29,23 @@ public class IrcChannel {
 
     var ircClient: IrcClient
     var channelName: String
+    var users = [IrcUser]()
 
     init(ircClient: IrcClient, channelName: String) {
         self.ircClient = ircClient
         self.channelName = channelName
+    }
+
+    public func getConnectedUsers() -> [IrcUser] {
+        return users
+    }
+
+    public func addUser(user: IrcUser) {
+        self.users.append(user)
+    }
+
+    public func removeUser(user: IrcUser) {
+        self.users = self.users.filter { $0 != user }
     }
 
 }

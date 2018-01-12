@@ -28,10 +28,47 @@ import Foundation
 /// All relevant delegate functions for IRC are specified here, i.e. for events like
 /// message received, kicked from a channel, etc.
 public protocol IrcClientProtocol: class {
-    func privateMessage(user: IrcUser, channel: String, message: String)
+    func newMOTD(motd: String)
+    func privateMessage(user: IrcUser, source: String, message: String)
+
+    func joinedChannel(channel: IrcChannel)
+    func partedChannel(channel: String)
+
+    func userJoinedChannel(user: IrcUser, channel: IrcChannel)
+    func userPartedChannel(user: IrcUser, channel: IrcChannel, reason: String?)
+
+    // Following functions are for unimplemented commands
+    func unhandledCommand(user: IrcUser, command: IrcResponseCode, params: [String])
+    func unknownCommand(user: IrcUser, command: String, params: [String])
 }
 
 // MARK: - Base implementation of optional IrcClientProtocol methods
 public extension IrcClientProtocol {
+    func newMOTD(motd: String) {
+        // Stub
+    }
 
+    func joinedChannel(channel: IrcChannel) {
+        // Stub
+    }
+
+    func partedChannel(channel: String) {
+        // Stub
+    }
+
+    func userJoinedChannel(user: IrcUser, channel: IrcChannel) {
+        // Stub
+    }
+    
+    func userPartedChannel(user: IrcUser, channel: IrcChannel, reason: String?) {
+        // Stub
+    }
+
+    func unhandledCommand(user: IrcUser, command: IrcResponseCode, params: [String]) {
+        // Stub
+    }
+
+    func unknownCommand(user: IrcUser, command: String, params: [String]) {
+        // Stub
+    }
 }

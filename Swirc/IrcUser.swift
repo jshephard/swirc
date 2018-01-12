@@ -29,26 +29,26 @@ import Foundation
 public struct IrcUser {
 
     var password: String?
+    public private(set) var hostname: String?
     public private(set) var username: String?
-    public private(set) var nick: String
-    
-    /// Initialize the IrcUser with nick alone
-    ///
-    /// - Parameter nick: Nickname to use on the IRC server
-    public init(nick: String) {
-        self.nick = nick
-    }
-    
-    /// Initialize the IrcUser with a nickname, username and password
-    ///
-    /// - Parameters:
-    ///   - nick: Nickname to use on the IRC server
-    ///   - username: Username for the IRC server
-    ///   - password: Password for the IRC server
-    public init(nick: String, username: String, password: String) {
-        self.nick = nick
+    public private(set) var realname: String?
+    public private(set) var nickname: String
+
+    public init(nickname: String, username: String? = nil, password: String? = nil,
+                hostname: String? = nil, realname: String? = nil) {
+        self.nickname = nickname
         self.username = username
         self.password = password
+        self.hostname = hostname
+        self.realname = realname
+    }
+
+}
+
+extension IrcUser: Equatable {
+    
+    public static func == (lhs: IrcUser, rhs: IrcUser) -> Bool {
+        return lhs.nickname == rhs.nickname
     }
 
 }

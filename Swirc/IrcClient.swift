@@ -26,10 +26,13 @@
 import Foundation
 
 import CocoaAsyncSocket
+import SwiftyBeaver
 
 /// Manages the connection to the IRC server
 public class IrcClient: NSObject, GCDAsyncSocketDelegate {
-    
+
+    var log: SwiftyBeaver.Type
+
     var hostname: String
     var port: UInt16 = 6667
     var user: IrcUser
@@ -47,6 +50,9 @@ public class IrcClient: NSObject, GCDAsyncSocketDelegate {
     typealias CommandHandler = (IrcUser, [String]) -> Void
     var handlers = [IrcResponseCode: CommandHandler]()
     weak var delegate: IrcClientProtocol?
+
+    // Server information
+    var motd: String?
 
     /// Initialize IrcClient
     ///
@@ -82,6 +88,9 @@ public class IrcClient: NSObject, GCDAsyncSocketDelegate {
         self.user = user
         self.socket = GCDAsyncSocket.init()
         self.delegate = delegate
+        self.log = SwiftyBeaver.self
+        let console = ConsoleDestination()
+        log.addDestination(console)
 
         super.init()
         
@@ -124,14 +133,56 @@ public class IrcClient: NSObject, GCDAsyncSocketDelegate {
         }
     }
 
+    /// Sends a private message to the specified user
+    ///
+    /// - Parameters:
+    ///   - target: Irc user to send message to
+    ///   - message: Message content
+    public func sendPrivateMessage(toUser target: IrcUser, message: String) {
+        self.sendPrivateMessage(toTarget: target.nickname, message: message)
+    }
+
+
+    /// Sends a message to the specified channel
+    ///
+    /// - Parameters:
+    ///   - target: Irc channel to send message to
+    ///   - message: Message content
+    public func sendPrivateMessage(toChannel target: IrcChannel, message: String) {
+        self.sendPrivateMessage(toTarget: target.channelName, message: message)
+    }
+
+    /// Sends a message to the specified target
+    ///
+    /// - Parameters:
+    ///   - target: Target to send message to
+    ///   - message: Message content
+    public func sendPrivateMessage(toTarget target: String, message: String) {
+        guard connected && authenticated else {
+            log.error("Attempting to message while connected = \(connected)" +
+                      " and authenticated = \(authenticated)")
+            return
+        }
+
+        // IF CHANNEL check connected to channel
+
+        writeString("PRIVMSG \(target) :\(message)")
+    }
+
     /// Joins the specified channel
     ///
     /// - Parameter channelString: The channel
     public func joinChannel(_ channelString: String) {
-        // TODO: check connection and authentication status
+        guard connected && authenticated else {
+            log.error("Attempting to part channel \(channelString) while connected = " +
+                      "\(connected) and authenticated = \(authenticated)")
+            return
+        }
+
         // TODO: validation of string
         if connectedChannels[channelString] != nil {
             // Already connected
+            log.debug("Attempting to re-join channel, skipping")
             return
         }
 
@@ -140,48 +191,205 @@ public class IrcClient: NSObject, GCDAsyncSocketDelegate {
 
     /// Parts the specified channel
     ///
-    /// - Parameter channelString: The channel
-    public func partChannel(_ channelString: String) {
-        // TODO: check connection and authentication status
-        // TODO: validation of string
+    /// - Parameters:
+    ///   - channelString: The channel
+    ///   - reason: Reason for parting (optional)
+    public func partChannel(_ channelString: String, reason: String? = nil) {
+        guard connected && authenticated else {
+            log.error("Attempting to part channel \(channelString) while connected = " +
+                      "\(connected) and authenticated = \(authenticated)")
+            return
+        }
+        if connectedChannels[channelString] == nil {
+            return
+        }
 
-        writeString("PART \(channelString)")
+        if let reason = reason {
+            writeString("PART \(channelString) :\(reason)")
+        } else {
+            writeString("PART \(channelString)")
+        }
+    }
+
+    /// Disconnects from the IRC server
+    ///
+    /// - Parameter reason: Reason for quitting server
+    public func quit(reason: String? = nil) {
+        guard connected else {
+            // Not currently connected anyway!
+            return
+        }
+
+        if let reason = reason {
+            writeString("QUIT :\(reason)")
+        } else {
+            writeString("QUIT")
+        }
     }
 
     /* *** PRIVATE HELPERS *** */
 
     /// Send the authentication handshake
     func sendAuthentication() {
-        // TODO: can this be called when we're already connected?
-        let username = user.username ?? "guest"
-        if let password = user.password {
-            writeString("PASS \(password)")
+        if !authenticated {
+            let username = user.username ?? NSUserName()
+            let realname = user.realname ?? NSFullUserName()
+            if let password = user.password {
+                writeString("PASS \(password)")
+            }
+
+            // TODO: customizing the other attributes, i.e. invisibility, real name
+            writeString("USER \(username) 8 * :\(realname)")
         }
-        // TODO: customizing the other attributes, i.e. invisibility, real name
-        writeString("USER \(username) 8 * :guest")
-        writeString("NICK \(user.nick)")
+
+        writeString("NICK \(user.nickname)")
     }
 
     /* *** COMMAND HANDLERS *** */
 
     /// Initialize the handlers dictionary with all implemented command handlers
     func initializeHandlers() {
-        handlers[IrcResponseCode.PrivateMessage] = privMsg
+        handlers[IrcResponseCode.Ping] = ping
+        handlers[IrcResponseCode.Welcome] = welcome
+        handlers[IrcResponseCode.PrivateMessage] = privateMessage
+        handlers[IrcResponseCode.MOTDStart] = newMotd
+        handlers[IrcResponseCode.MOTD] = motdLine
+        handlers[IrcResponseCode.EndOfMOTD] = endOfMotd
+        handlers[IrcResponseCode.Join] = userJoined
+        handlers[IrcResponseCode.Part] = userParted
     }
 
-    /// Handle private message commands
-    ///
-    /// - Parameters:
-    ///   - user: The user details of who sent this message
-    ///   - params: Private message parameters
-    func privMsg(user: IrcUser, params: [String]) {
-        if params.count != 2 {
-            // TODO: handle?
+    func ping(user: IrcUser, params: [String]) {
+        writeString("PONG")
+    }
+
+    func welcome(user: IrcUser, params: [String]) {
+        // Response codes 001-004 sent on successful authentication
+        self.authenticated = true
+    }
+
+    func userJoined(user: IrcUser, params: [String]) {
+        guard params.count == 1 else {
+            log.error("Incorrect number of parameters in join message")
+            return
+        }
+
+        let channel = params[0]
+
+        if self.user.nickname == user.nickname {
+            // We've joined this channel, add it to our list of connected channels
+            if connectedChannels[channel] == nil {
+                let ircChannel = IrcChannel.init(ircClient: self, channelName: channel)
+                self.connectedChannels[channel] = ircChannel
+
+                // TODO: might move this to after end of nick handler so delegate has
+                // all the nicks available
+                self.delegate?.joinedChannel(channel: ircChannel)
+            }
+        } else {
+            // Update channel user list
+            if let ircChannel = connectedChannels[channel] {
+                ircChannel.addUser(user: user)
+                self.delegate?.userJoinedChannel(user: user, channel: ircChannel)
+            }
+        }
+    }
+
+    func userParted(user: IrcUser, params: [String]) {
+        guard params.count >= 1 else {
+            log.error("Incorrect number of parameters in join message")
+            return
+        }
+
+        let channel = params[0]
+
+        if self.user.nickname == user.nickname {
+            // We've parted this channel, remove it from our list of connected channels
+            if connectedChannels[channel] != nil {
+                connectedChannels.removeValue(forKey: channel)
+                self.delegate?.partedChannel(channel: channel)
+            }
+        } else {
+            let reason: String? = params.count > 1 ? params[1] : nil
+
+            // Update channel user list
+            if let ircChannel = connectedChannels[channel] {
+                ircChannel.removeUser(user: user)
+                self.delegate?.userPartedChannel(user: user, channel: ircChannel,
+                                                 reason: reason)
+            }
+        }
+    }
+
+    func privateMessage(user: IrcUser, params: [String]) {
+        guard params.count == 2 else {
+            log.error("Incorrect number of parameters in private message")
             return
         }
 
         let channel = params[0], message = params[1]
-        self.delegate?.privateMessage(user: user, channel: channel, message: message)
+        // TODO: private channel message and private user message separated?
+        self.delegate?.privateMessage(user: user, source: channel, message: message)
+    }
+
+    func newMotd(user: IrcUser, params: [String]) {
+        guard params.count == 2 else {
+            log.error("Incorrect number of parameters in MOTD start")
+            return
+        }
+        motd = params[1]
+    }
+
+    func motdLine(user: IrcUser, params: [String]) {
+        guard params.count == 2 else {
+            log.error("Incorrect number of parameters in MOTD")
+            return
+        }
+
+        if let motd = motd {
+            self.motd = "\(motd)\n\(params[1])"
+        } else {
+            self.motd = params[1]
+        }
+    }
+
+    func endOfMotd(user: IrcUser, params: [String]) {
+        if let motd = motd {
+            self.delegate?.newMOTD(motd: motd)
+        }
+    }
+
+    /* !!!IN PROGRESS!!! */
+
+    func modeUpdate(user: IrcUser, params: [String]) {
+        guard params.count == 2 else {
+            log.error("Incorrect number of parameters in mode update")
+            return
+        }
+
+        let target = params[0]
+        let modes = params[1] //e.g. +ns
+    }
+
+    func nameReply(user: IrcUser, params: [String]) {
+        guard params.count >= 4 else {
+            log.error("Incorrect number of parameters in name reply")
+            return
+        }
+        let target = params[0]
+        let channelStatus = params[1] // @, * or =
+        let channel = params[2]
+        let user = params[3] // may include @, +, etc.
+    }
+
+    func endOfNames(user: IrcUser, params: [String]) {
+        guard params.count >= 2 else {
+            log.error("Incorrect number of parameters in end of names")
+            return
+        }
+
+        let target = params[0]
+        let channel = params[1]
     }
     
     /* *** SOCKET PROTOCOL **** */
@@ -197,11 +405,107 @@ public class IrcClient: NSObject, GCDAsyncSocketDelegate {
         socket.readData(withTimeout: -1.0, tag: 0)
     }
 
+    func parseCommand(_ command: String) {
+        if !command.hasPrefix(":") {
+            return
+        }
+
+        let arguments = command.split(separator: " ")
+
+        // Remove the ':' prefix
+        let prefix = String(String(arguments[0]).dropFirst(1))
+
+        // Extract out this information with a regex
+        var nickname: String = prefix
+        var username: String?
+        var hostname: String?
+        do {
+            let regex = try NSRegularExpression(pattern: "^([^@!]+)(?:!([^@!]+))?(?:@([^@!]+))?$", options: [])
+            let matches = regex.matches(in: prefix, options: [], range: NSRange(location: 0, length: prefix.count))
+            if let match = matches.first {
+                var results = [String?]()
+                for index in 1..<match.numberOfRanges {
+                    let range = match.range(at: index)
+                    if !NSEqualRanges(range, NSMakeRange(NSNotFound, 0)) {
+                        results.append((prefix as NSString).substring(with: range))
+                    } else {
+                        results.append(nil)
+                    }
+                }
+                nickname = results[0] ?? nickname
+                username = results[1]
+                hostname = results[2]
+            }
+        } catch let error {
+            log.error("Error occurred during regex: \(error.localizedDescription)")
+        }
+
+        let responseCodeRaw = String(arguments[1])
+        let rawParams = arguments[2...].map { String($0) }
+
+        // Parse params. Initial params are delineated by spaces, latter ones
+        // can have spaces in them but begin with a colon
+        var params = [String]()
+        var trailingParams = false
+        var currentParam = ""
+
+        // TODO: Make this a cleaner solution, regex perhaps?
+        for rawParam in rawParams {
+            if trailingParams {
+                // We're now in the realm of the trailing params
+                if rawParam.starts(with: ":") {
+                    // New trailing param started
+                    params.append(String(currentParam.dropFirst(1)))
+                    currentParam = rawParam
+                } else {
+                    // Continue adding to our current trailing param
+                    currentParam += " " + rawParam
+                }
+            } else {
+                if rawParam.starts(with: ":") {
+                    // This is our first trailing param
+                    trailingParams = true
+                    currentParam = rawParam
+                } else {
+                    params.append(rawParam)
+                }
+            }
+        }
+        if trailingParams {
+            params.append(String(currentParam.dropFirst(1)))
+        }
+
+        let responseCode = IrcResponseCode(rawValue: responseCodeRaw)
+        let commandUser = IrcUser.init(nickname: nickname, username: username,
+                                       hostname: hostname)
+
+        if let responseCode = responseCode {
+            if let handler = handlers[responseCode] {
+                handler(commandUser, params)
+            } else {
+                #if DEBUG
+                    print("\(nickname) \(username ?? "") \(hostname ?? "") \(responseCode.rawValue) \(params)")
+                #endif
+                self.delegate?.unhandledCommand(user: commandUser,
+                                                command: responseCode,
+                                                params: params)
+            }
+        } else {
+            #if DEBUG
+                print("\(nickname) \(username ?? "") \(hostname ?? "") \(responseCodeRaw) \(params)")
+            #endif
+            self.delegate?.unknownCommand(user: commandUser,
+                                          command: responseCodeRaw,
+                                          params: params)
+        }
+    }
+
     /// Called when the socket receives data from the IRC server
     @objc public func socket(_ sock: GCDAsyncSocket, didRead data: Data, withTag tag: Int) {
         socket.readData(withTimeout: -1.0, tag: 0)
 
-        if let str = String.init(data: data, encoding: String.Encoding.ascii) {
+        if let str = String.init(data: data, encoding: .utf8) ??
+            String.init(data: data, encoding: .ascii) {
             // Reassemble string from previous fragmented data
             let assembledString = (interimSocketData ?? "") + str
             let fragmented: Bool = !assembledString.hasSuffix("\r\n")
@@ -219,91 +523,8 @@ public class IrcClient: NSObject, GCDAsyncSocketDelegate {
                     interimSocketData = command
                     return
                 }
-                if !command.hasPrefix(":") {
-                    return // TODO: do clients ever _not_ receive :?
-                }
 
-                // TODO: strip out the following into a separate parser function
-                let arguments = command.split(separator: " ")
-
-                // Remove the ':' prefix
-                let prefix = String(String(arguments[0]).dropFirst(1))
-
-                // Extract out this information with a regex
-                var nick: String? = prefix
-                var user: String?
-                var host: String?
-                do {
-                    // TODO: separate function?
-                    let regex = try NSRegularExpression(pattern: "^([^@!]+)(?:!([^@!]+))?(?:@([^@!]+))?$", options: [])
-                    let matches = regex.matches(in: prefix, options: [], range: NSRange(location: 0, length: prefix.count))
-                    if let match = matches.first {
-                        var results = [String?]()
-                        for index in 1..<match.numberOfRanges {
-                            let range = match.range(at: index)
-                            if !NSEqualRanges(range, NSMakeRange(NSNotFound, 0)) {
-                                results.append((prefix as NSString).substring(with: range))
-                            } else {
-                                results.append(nil)
-                            }
-                        }
-                        nick = results[0]
-                        user = results[1]
-                        host = results[2]
-                    }
-                } catch let error {
-                    // TODO: handle error better
-                    print(error)
-                }
-
-                let responseCodeRaw = String(arguments[1])
-                let rawParams = arguments[2...].map { String($0) }
-
-                // Parse params. Initial params are delineated by spaces, latter ones
-                // can have spaces in them but begin with a colon
-                var params = [String]()
-                var trailingParams = false
-                var currentParam = ""
-
-                // TODO: Make this a cleaner solution, regex perhaps?
-                for rawParam in rawParams {
-                    if trailingParams {
-                        // We're now in the realm of the trailing params
-                        if rawParam.starts(with: ":") {
-                            // New trailing param started
-                            params.append(String(currentParam.dropFirst(1)))
-                            currentParam = rawParam
-                        } else {
-                            // Continue adding to our current trailing param
-                            currentParam += " " + rawParam
-                        }
-                    } else {
-                        if rawParam.starts(with: ":") {
-                            // This is our first trailing param
-                            trailingParams = true
-                            currentParam = rawParam
-                        } else {
-                            params.append(rawParam)
-                        }
-                    }
-                }
-                if trailingParams {
-                    params.append(String(currentParam.dropFirst(1)))
-                }
-
-                let responseCode = IrcResponseCode(rawValue: responseCodeRaw)
-
-                #if DEBUG
-                    print("""
-\(nick ?? "") \(user ?? "") \(host ?? "") \(responseCode == nil ? responseCodeRaw : responseCode.debugDescription) \(params)
-""")
-                #endif
-                if let code = responseCode, let handler = handlers[code] {
-                    // TODO: flesh out the IrcUser a bit more (i.e. host, user, etc.)
-                    handler(IrcUser.init(nick: nick ?? "UNKNOWN"), params)
-                } else {
-                    // TODO: unknown command
-                }
+                parseCommand(command)
             }
         }
     }
@@ -321,7 +542,7 @@ public class IrcClient: NSObject, GCDAsyncSocketDelegate {
             command += "\r\n"
         }
 
-        if let data = command.data(using: .ascii) {
+        if let data = command.data(using: .utf8) {
             socket.write(data, withTimeout: -1.0, tag:0)
         }
     }

@@ -19,4 +19,5 @@ Swirc, or Swift IRC, is a simple framework for connecting and communicating with
   s.source       = { :git => "http://github.com/jshephard/swirc.git" }
   s.source_files  = "Swirc/**/*"
   s.dependency 'CocoaAsyncSocket'
+  s.dependency 'SwiftyBeaver'
 end
